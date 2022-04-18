@@ -55,7 +55,7 @@ class HistoryAdapter(private val context: Context, private val barcodeList: List
             "URI" -> {
                 val geoListener = DialogInterface.OnClickListener { _, p1 ->
                     when (p1) {
-                        DialogInterface.BUTTON_NEUTRAL -> {
+                        DialogInterface.BUTTON_NEGATIVE -> {
                             copyClipBoard(type,rawResult)
                         }
                         DialogInterface.BUTTON_POSITIVE -> {
@@ -64,13 +64,11 @@ class HistoryAdapter(private val context: Context, private val barcodeList: List
                             }
                             context.startActivity(intent)
                         }
-                        DialogInterface.BUTTON_NEGATIVE -> {
-                        }
                     }
                 }
                 builder.setPositiveButton("execute", geoListener)
-                builder.setPositiveButton("copy", geoListener)
-                builder.setNegativeButton("cancel", geoListener)
+                builder.setNegativeButton("copy", geoListener)
+                builder.setNeutralButton("cancel", geoListener)
             }
             "EMAIL_ADDRESS" -> {
                 val emailListener = DialogInterface.OnClickListener { _, p1 ->
@@ -83,12 +81,10 @@ class HistoryAdapter(private val context: Context, private val barcodeList: List
                                 context.startActivity(intent)
                             }
                         }
-                        DialogInterface.BUTTON_NEGATIVE -> {
-                        }
                     }
                 }
                 builder.setPositiveButton("execute", emailListener)
-                builder.setNegativeButton("cancel", emailListener)
+                builder.setNeutralButton("cancel", emailListener)
 
             }
             "TEL" -> {
@@ -102,26 +98,22 @@ class HistoryAdapter(private val context: Context, private val barcodeList: List
                                 context.startActivity(intent)
                             }
                         }
-                        DialogInterface.BUTTON_NEGATIVE -> {
-                        }
                     }
                 }
                 builder.setPositiveButton("execute", telListener)
-                builder.setNegativeButton("cancel", telListener)
+                builder.setNeutralButton("cancel", telListener)
 
             }
             else -> {
                 val listener = DialogInterface.OnClickListener { _, p1 ->
                     when (p1) {
-                        DialogInterface.BUTTON_POSITIVE -> {
-                            copyClipBoard(type,rawResult)
-                        }
                         DialogInterface.BUTTON_NEGATIVE -> {
+                            copyClipBoard(type,rawResult)
                         }
                     }
                 }
-                builder.setPositiveButton("copy", listener)
-                builder.setNegativeButton("cancel", listener)
+                builder.setNegativeButton("copy", listener)
+                builder.setNeutralButton("cancel", listener)
             }
         }
         builder.setTitle(type)
@@ -129,7 +121,7 @@ class HistoryAdapter(private val context: Context, private val barcodeList: List
         builder.show()
 
     }
-    fun copyClipBoard(type: String, rawResult: String) {
+    private fun copyClipBoard(type: String, rawResult: String) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText(type,rawResult)
         clipboard.setPrimaryClip(clip)
