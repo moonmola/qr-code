@@ -1,6 +1,5 @@
 package com.dabong.qr_code
 
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
@@ -14,29 +13,29 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.dabong.qr_code.databinding.ActivityMainBinding
 import com.google.zxing.Result
 import com.google.zxing.client.result.EmailAddressParsedResult
 import com.google.zxing.client.result.EmailAddressResultParser
 import com.google.zxing.client.result.ParsedResultType
 import com.google.zxing.client.result.ResultParser
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.premission_button
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 
 class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
-    var mContext: Context? = null
-
-    private var mScannerView: ZXingScannerView? = null
-    private lateinit var builder: androidx.appcompat.app.AlertDialog.Builder
+    private lateinit var builder: AlertDialog.Builder
     private var appDatabase: AppDatabase? = null
+    private lateinit var binding: ActivityMainBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        mScannerView = findViewById(R.id.barcodeScanner)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         requestPermission.launch(android.Manifest.permission.CAMERA)
 
@@ -44,42 +43,35 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             requestPermission.launch(android.Manifest.permission.CAMERA)
         }
 
-        mContext = this
-
         builder = AlertDialog.Builder(this)
         appDatabase = AppDatabase.getInstance(this)
-
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.actionbar_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.history -> {
-                val nextIntent = Intent(this, HistoryActivity::class.java)
-                startActivity(nextIntent)
-            }
-            else -> {
-
-            }
+        binding.barcodeScanner.also {
+            it.setAutoFocus(true)
+            it.setBorderColor(ContextCompat.getColor(applicationContext, R.color.colorAccent))
+            it.setBorderStrokeWidth(20)
+            it.setSquareViewFinder(true)
+            it.setIsBorderCornerRounded(true)
+            it.setResultHandler(this)
         }
-        return super.onOptionsItemSelected(item)
+        binding.historyButton.setOnClickListener {
+            val nextIntent = Intent(this, HistoryActivity::class.java)
+            startActivity(nextIntent)
+        }
+
     }
 
     override fun onResume() {
         super.onResume()
-        mScannerView?.let {
-            it.setAutoFocus(true)
-            it.setResultHandler(this)
-            it.startCamera()
-        }
+        binding.barcodeScanner.startCamera()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.barcodeScanner.stopCamera()
     }
 
 
-    fun readBarcode(rawResult: Result) {
+    private fun readBarcode(rawResult: Result) {
         val result = ResultParser.parseResult(rawResult)
         when (result.type) {
             ParsedResultType.GEO -> {

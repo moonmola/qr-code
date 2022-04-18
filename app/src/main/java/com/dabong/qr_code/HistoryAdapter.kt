@@ -1,48 +1,52 @@
 package com.dabong.qr_code
 
 import android.app.AlertDialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.dabong.qr_code.databinding.ListItemBinding
 
 
-class HistoryAdapter(val context: Context, val barcodeList: List<Barcode>) :
-    RecyclerView.Adapter<HistoryAdapter.Holder>() {
+class HistoryAdapter(private val context: Context, private val barcodeList: List<Barcode>) :
+    RecyclerView.Adapter<HistoryAdapter.VH>() {
     private lateinit var builder: AlertDialog.Builder
 
-    inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val historyIcon: ImageView = itemView.findViewById(R.id.history_Icon)
-        private val historyType = itemView.findViewById<TextView>(R.id.history_type)
-        private val historyText = itemView.findViewById<TextView>(R.id.history_text)
-
-        fun bind(barcode: Barcode, context: Context) {
-            historyType.text = barcode.type
-            historyText.text = barcode.result
-            itemView.setOnClickListener {
+    inner class VH(private val binding: ListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(barcode: Barcode) {
+            binding.historyIcon.setImageDrawable(when (barcode.type) {
+                "URI" -> ContextCompat.getDrawable(context, R.drawable.ic_baseline_link_24)
+                "TEL" -> ContextCompat.getDrawable(context, R.drawable.ic_baseline_call_24)
+                "EMAIL_ADDRESS" -> ContextCompat.getDrawable(context, R.drawable.ic_baseline_email_24)
+                else-> ContextCompat.getDrawable(context, R.drawable.ic_baseline_text_snippet_24)
+            })
+            binding.historyType.text = barcode.type
+            binding.historyText.text = barcode.result
+            binding.root.setOnClickListener {
                 barcode.type?.let { it1 -> barcode.result?.let { it2 -> readBarcode(it1, it2) } }
 
             }
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        val view = LayoutInflater.from(context).inflate(R.layout.list_item, parent, false)
-        return Holder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+        val binding = ListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return VH(binding)
     }
 
     override fun getItemCount(): Int {
         return barcodeList.size
     }
 
-    override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(barcodeList[position], context)
+    override fun onBindViewHolder(VH: VH, position: Int) {
+        VH.bind(barcodeList[position])
     }
 
     fun readBarcode(type: String, rawResult: String) {
@@ -51,22 +55,22 @@ class HistoryAdapter(val context: Context, val barcodeList: List<Barcode>) :
             "URI" -> {
                 val geoListener = DialogInterface.OnClickListener { _, p1 ->
                     when (p1) {
+                        DialogInterface.BUTTON_NEUTRAL -> {
+                            copyClipBoard(type,rawResult)
+                        }
                         DialogInterface.BUTTON_POSITIVE -> {
                             val intent = Intent(Intent.ACTION_VIEW).apply {
                                 data = Uri.parse(rawResult)
                             }
-                            if (intent.resolveActivity(context.packageManager) != null) {
-                                context.startActivity(intent)
-                            }
+                            context.startActivity(intent)
                         }
                         DialogInterface.BUTTON_NEGATIVE -> {
                         }
                     }
                 }
                 builder.setPositiveButton("execute", geoListener)
+                builder.setPositiveButton("copy", geoListener)
                 builder.setNegativeButton("cancel", geoListener)
-
-
             }
             "EMAIL_ADDRESS" -> {
                 val emailListener = DialogInterface.OnClickListener { _, p1 ->
@@ -88,7 +92,7 @@ class HistoryAdapter(val context: Context, val barcodeList: List<Barcode>) :
 
             }
             "TEL" -> {
-                val tel_listener = DialogInterface.OnClickListener { _, p1 ->
+                val telListener = DialogInterface.OnClickListener { _, p1 ->
                     when (p1) {
                         DialogInterface.BUTTON_POSITIVE -> {
                             val intent = Intent(Intent.ACTION_DIAL).apply {
@@ -102,17 +106,21 @@ class HistoryAdapter(val context: Context, val barcodeList: List<Barcode>) :
                         }
                     }
                 }
-                builder.setPositiveButton("execute", tel_listener)
-                builder.setNegativeButton("cancel", tel_listener)
+                builder.setPositiveButton("execute", telListener)
+                builder.setNegativeButton("cancel", telListener)
 
             }
             else -> {
                 val listener = DialogInterface.OnClickListener { _, p1 ->
                     when (p1) {
+                        DialogInterface.BUTTON_POSITIVE -> {
+                            copyClipBoard(type,rawResult)
+                        }
                         DialogInterface.BUTTON_NEGATIVE -> {
                         }
                     }
                 }
+                builder.setPositiveButton("copy", listener)
                 builder.setNegativeButton("cancel", listener)
             }
         }
@@ -120,6 +128,12 @@ class HistoryAdapter(val context: Context, val barcodeList: List<Barcode>) :
         builder.setMessage(rawResult)
         builder.show()
 
+    }
+    fun copyClipBoard(type: String, rawResult: String) {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText(type,rawResult)
+        clipboard.setPrimaryClip(clip)
+        Toast.makeText(context, "클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
     }
 
 

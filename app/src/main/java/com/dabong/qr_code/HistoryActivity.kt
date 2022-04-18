@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.dabong.qr_code.databinding.ActivityHistoryBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
@@ -13,23 +13,22 @@ import kotlinx.coroutines.launch
 class HistoryActivity : AppCompatActivity() {
     private var appDatabase: AppDatabase? = null
     private var historyList: List<Barcode>? = null
+    private lateinit var binding: ActivityHistoryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_history)
-        val historyView: RecyclerView = findViewById(R.id.history_listview)
-
+        binding = ActivityHistoryBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         appDatabase = AppDatabase.getInstance(this)
         CoroutineScope(IO).launch {
             historyList = appDatabase?.barcodeDao()?.getAll()
             historyList?.let {
-                val mAdapter = HistoryAdapter(this@HistoryActivity, it)
-                historyView.adapter = mAdapter
+                binding.historyListview.adapter = HistoryAdapter(this@HistoryActivity, it)
             }
         }
         Log.e("list", historyList.toString())
-        historyView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+        binding.historyListview.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
     }
 
     override fun onResume() {
