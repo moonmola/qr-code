@@ -1,0 +1,77 @@
+<resources>
+    <string name="app_name">qr-code</string>
+    <string name="KoreannetUrl">http://www.koreannet.or.kr/home/hpisSrchGtin.gs1?gtin=</string>
+    <string name="contentData">div.productTit</string>
+    <string name="noResult">DB에 등록되지 않은 코드입니다.</string>
+    <string name="textView_needQR">QR 코드를 스캔하여 주세요</string>
+
+    <!--wifi-->
+    <string name="type_wifi">WIFI</string>
+    <string name="wifi_connect">wifi_connect</string>
+    <string name="connect_wifi">connect_wifi</string>
+
+
+    <!--website-->
+    <string name="type_url">type_url</string>
+    <string name="go_to_website">go_to_website</string>
+
+    <!--sms-->
+    <string name="type_sms">type_sms</string>
+    <string name="send_sms">send_sms</string>
+
+    <!--geo-->
+    <string name="type_geo">type_geo</string>
+    <string name="open_map">open_map</string>
+
+    <!--tel-->
+    <string name="type_tel">type_tel</string>
+    <string name="call">call</string>
+
+    <!--email-->
+    <string name="type_email">type_email</string>
+    <string name="send_email">send_email 電子郵件</string>
+
+    <!--text-->
+    <string name="type_text">type_text</string>
+
+
+    <!--Generate-->
+    <string name="save">save</string>
+    <string name="type_generate">type_generate</string>
+
+
+    <!--Type Generate-->
+    <string name="wifi">WIFI</string>
+    <string name="website">website</string>
+    <string name="sms">sms</string>
+    <string name="geo">geo</string>
+    <string name="tel">tel</string>
+    <string name="mail">mail</string>
+    <string name="mecard">MECARD</string>
+    <string name="vcard">VCARD</string>
+    <string name="vevent">VEVENT</string>
+
+
+    <!--Geo Generate-->
+    <string name="latitude">latitude</string>
+    <string name="longitude">longitude</string>
+    <string name="query">query</string>
+
+    <!--Mail Generate-->
+    <string name="mail_address">mail_address</string>
+
+    <!--SMS Generate-->
+    <string name="message">message</string>
+    <string name="phone_number">phone_number</string>
+
+    <!--URL Generate-->
+    <string name="url">url</string>
+
+    <!--WIFI Generate-->
+    <string name="ssid">SSID</string>
+    <string name="password">password</string>
+    <string name="network_type">network_type</string>
+    <string name="none">none</string>
+    <string name="hidden">hidden?</string>
+
+</resources>
