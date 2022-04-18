@@ -3,7 +3,7 @@
     <string name="KoreannetUrl">http://www.koreannet.or.kr/home/hpisSrchGtin.gs1?gtin=</string>
     <string name="contentData">div.productTit</string>
     <string name="noResult">DB에 등록되지 않은 코드입니다.</string>
-    <string name="textView_needQR">QR 코드를 스캔하여 주세요</string>
+    <string name="textView_needQR">QR 코드를 스캔하세요</string>
 
     <!--wifi-->
     <string name="type_wifi">WIFI</string>
